@@ -1,0 +1,33 @@
+{
+  "name": "tophats",
+  "version": "1.0.0",
+  "scripts": {
+    "gallery": "node scripts/build-gallery.mjs",
+    "placeholders": "node scripts/make-placeholders.mjs",
+    "predev": "npm run gallery",
+    "dev": "vite",
+    "prebuild": "npm run gallery",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "description": "Top Hats 4 All — a whimsical WordPress-style prototype site",
+  "dependencies": {
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router-dom": "^7.18.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "gray-matter": "^4.0.3",
+    "marked": "^18.2.0",
+    "sharp": "^0.35.5",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.7"
+  },
+  "private": true,
+  "type": "module"
+}
