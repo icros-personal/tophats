@@ -1,11 +1,9 @@
 import { useState, type FormEvent } from 'react';
 import PageHeader from '../components/PageHeader';
 import { HatIcon } from '../components/Logo';
-import { usePageTitle } from '../usePageTitle';
 
 /** Visual-only contact form: nothing is sent anywhere. */
 export default function Contact() {
-  usePageTitle('Contact');
   const [sentTo, setSentTo] = useState<string | null>(null);
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {

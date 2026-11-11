@@ -1,10 +1,8 @@
 import HatCard from '../components/HatCard';
 import PageHeader from '../components/PageHeader';
 import { gallery } from '../gallery';
-import { usePageTitle } from '../usePageTitle';
 
 export default function Gallery() {
-  usePageTitle('Gallery');
 
   return (
     <>

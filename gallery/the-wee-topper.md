@@ -1,5 +1,6 @@
 ---
 title: The Wee Topper
+alt: A round, smiling blue creature wearing a small black top hat with a mint-green band
 summary: Proof that a top hat fits everyone. Everyone.
 order: 2
 ---

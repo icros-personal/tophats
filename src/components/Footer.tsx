@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { gallery } from '../gallery';
 
@@ -8,8 +9,14 @@ const FACTS = [
   'Every top hat is legally a tiny chimney for thoughts.',
 ];
 
+/** Fixed at build time so pre-rendered HTML and the first client render match. */
+const BUILD_YEAR = new Date().getFullYear();
+
 export default function Footer() {
-  const fact = FACTS[new Date().getDate() % FACTS.length];
+  // Start with a fixed fact (matching the pre-rendered HTML), then pick
+  // today's after hydration.
+  const [fact, setFact] = useState(FACTS[0]);
+  useEffect(() => setFact(FACTS[new Date().getDate() % FACTS.length]), []);
   const recent = gallery.slice(0, 4);
 
   return (
@@ -27,7 +34,7 @@ export default function Footer() {
           <ul className="widget-list">
             {recent.map((h) => (
               <li key={h.slug}>
-                <Link to={`/gallery/${h.slug}`}>{h.title}</Link>
+                <Link to={`/gallery/${h.slug}/`}>{h.title}</Link>
               </li>
             ))}
           </ul>
@@ -39,9 +46,9 @@ export default function Footer() {
       </div>
       <div className="footer-bottom">
         <div className="container footer-bottom-inner">
-          <span>© {new Date().getFullYear()} Top Hats 4 All. All hats reserved.</span>
+          <span>© {BUILD_YEAR} Top Hats 4 All. All hats reserved.</span>
           <span>
-            <Link to="/gallery">Gallery</Link> · <Link to="/contact">Contact</Link>
+            <Link to="/gallery/">Gallery</Link> · <Link to="/contact/">Contact</Link>
           </span>
         </div>
       </div>

@@ -4,8 +4,8 @@ import Logo from './Logo';
 
 const NAV = [
   { to: '/', label: 'Home', end: true },
-  { to: '/gallery', label: 'Gallery', end: false },
-  { to: '/contact', label: 'Contact', end: false },
+  { to: '/gallery/', label: 'Gallery', end: false },
+  { to: '/contact/', label: 'Contact', end: false },
 ];
 
 /** Scroll distance (px) after which the header collapses into its slim form. */

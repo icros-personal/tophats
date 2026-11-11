@@ -5,12 +5,18 @@ export interface GalleryItem {
   slug: string;
   title: string;
   summary: string | null;
+  /** Describes what the image shows; null if the sidecar doesn't say. Use hatAlt(). */
+  alt: string | null;
+  /** Plain-text start of the description, for meta descriptions. */
+  excerpt: string;
   descriptionHtml: string;
   hasSidecar: boolean;
   order: number | null;
-  /** Path relative to the site base, e.g. "gallery/thumbs/x.webp". Use asset(). */
+  /** Paths relative to the site base, e.g. "media/thumbs/x.webp". Use asset(). */
   thumb: string;
   full: string;
+  /** 1200x630 JPEG for social-share previews. */
+  og: string;
   width: number;
   height: number;
 }
@@ -19,6 +25,11 @@ export const gallery = data as GalleryItem[];
 
 /** Prefix a public path with the deploy base ("/tophats/"). */
 export const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
+
+/** Router path for a hat's page. Trailing slash: each page is a folder with index.html. */
+export const hatPath = (slug: string) => `/gallery/${slug}/`;
+
+export const hatAlt = (hat: GalleryItem) => hat.alt ?? hat.title;
 
 export function findHat(slug: string | undefined) {
   const index = gallery.findIndex((h) => h.slug === slug);

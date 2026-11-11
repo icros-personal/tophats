@@ -200,6 +200,7 @@ const HATS = [
 const SIDECARS = {
   'the-classic-silk': `---
 title: The Classic Silk
+alt: A tall black silk top hat with a deep red band, on a peach background scattered with confetti
 summary: Where it all began. Black silk, red band, impeccable posture.
 order: 1
 ---
@@ -210,6 +211,7 @@ Suitable for: weddings, funerals, bank heists (the polite kind), and Tuesdays.
 `,
   'midnight-plum': `---
 title: Midnight Plum
+alt: A purple top hat with a gold band against a night-blue sky full of stars
 summary: For stargazers, night owls, and anyone who owns a cape.
 ---
 Woven under a new moon, the **Midnight Plum** shimmers faintly when nobody is looking.
@@ -217,6 +219,7 @@ Its gold band is rumoured to be a repurposed comet tail.
 `,
   'the-wee-topper': `---
 title: The Wee Topper
+alt: A round, smiling blue creature wearing a small black top hat with a mint-green band
 summary: Proof that a top hat fits everyone. Everyone.
 order: 2
 ---
@@ -227,6 +230,7 @@ for a perfectly proportioned blob.
 `,
   'ringmaster-red': `---
 title: Ringmaster Red
+alt: A very tall red top hat with a black band and a gold buckle, on a warm yellow background
 summary: Ladies and gentlemen, children of all ages…
 ---
 Tall, red, and impossible to ignore. Comes with a gold buckle and an irresistible urge
@@ -234,6 +238,7 @@ to announce things.
 `,
   'hatters-special': `---
 title: The Hatter's Special
+alt: A brown top hat with a mustard band and a little card reading "4/all" tucked into it, tilted slightly
 summary: Price card included. Sanity sold separately.
 ---
 A tribute to every hatter who has ever been called "a bit much". In this style, 4/all is
@@ -241,6 +246,7 @@ both the price and the philosophy.
 `,
   'grandpas-sunday-best': `---
 title: Grandpa's Sunday Best
+alt: A small brown creature with rosy cheeks wearing a slate-grey top hat with a grey feather
 summary: Dusted off once a week, worn with great ceremony.
 ---
 Slate grey with a jaunty feather. Grandpa says it's "not a big deal". Grandpa has

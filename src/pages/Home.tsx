@@ -2,10 +2,8 @@ import { Link } from 'react-router-dom';
 import HeroArt from '../components/HeroArt';
 import HatCard from '../components/HatCard';
 import { gallery } from '../gallery';
-import { usePageTitle } from '../usePageTitle';
 
 export default function Home() {
-  usePageTitle();
   const featured = gallery.slice(0, 3);
 
   return (
@@ -29,10 +27,10 @@ export default function Home() {
           fitting. We promise not to pull anything out of you.
         </p>
         <p className="intro-actions">
-          <Link to="/gallery" className="button">
+          <Link to="/gallery/" className="button">
             Browse the gallery
           </Link>
-          <Link to="/contact" className="button button-ghost">
+          <Link to="/contact/" className="button button-ghost">
             Get in touch
           </Link>
         </p>
@@ -50,7 +48,7 @@ export default function Home() {
               ))}
             </div>
             <p className="center">
-              <Link to="/gallery" className="text-link">
+              <Link to="/gallery/" className="text-link">
                 See all {gallery.length} hats →
               </Link>
             </p>

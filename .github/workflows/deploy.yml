@@ -32,7 +32,7 @@ jobs:
       - name: Restore generated gallery images
         uses: actions/cache@v4
         with:
-          path: public/gallery
+          path: public/media
           key: gallery-${{ hashFiles('gallery/**', 'scripts/build-gallery.mjs') }}
           restore-keys: gallery-
 

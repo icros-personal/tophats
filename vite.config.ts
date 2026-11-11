@@ -1,28 +1,14 @@
-import { copyFileSync } from 'node:fs';
-import { resolve } from 'node:path';
-import { defineConfig, type Plugin } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { site } from './src/site.ts';
 
-/**
- * GitHub Pages has no server-side routing. Serving a copy of index.html as
- * 404.html lets clean URLs like /tophats/gallery/silk-topper load the SPA,
- * which then routes client-side.
- */
-function spaFallback(): Plugin {
-  let outDir = 'dist';
-  return {
-    name: 'spa-404-fallback',
-    apply: 'build',
-    configResolved(config) {
-      outDir = resolve(config.root, config.build.outDir);
-    },
-    closeBundle() {
-      copyFileSync(resolve(outDir, 'index.html'), resolve(outDir, '404.html'));
-    },
-  };
-}
-
-export default defineConfig({
-  base: '/tophats/',
-  plugins: [react(), spaFallback()],
-});
+// Pages are pre-rendered to static HTML after the build by scripts/prerender.mjs
+// (see the "build" script in package.json).
+export default defineConfig(({ isSsrBuild }) => ({
+  base: site.basePath,
+  plugins: [react()],
+  build: {
+    // The SSR bundle is only used at build time; it doesn't need public/ copied.
+    copyPublicDir: !isSsrBuild,
+  },
+}));

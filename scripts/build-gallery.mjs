@@ -7,16 +7,18 @@
  *
  * Sidecar frontmatter fields (all optional):
  *   title:   Display title (default: derived from the filename)
- *   summary: One-liner shown on the gallery card
+ *   summary: One-liner shown on the gallery card and used as the page description
+ *   alt:     Describes what the image shows, for screen readers (default: the title)
  *   order:   Number; lower sorts first (default: sorted by title)
  *
  * Outputs (both gitignored, regenerated on every dev/build):
- *   public/gallery/thumbs/<slug>.webp   600x450 cover-cropped thumbnail
- *   public/gallery/full/<slug>.webp     up to 1600px wide display image
+ *   public/media/thumbs/<slug>.webp     600x450 cover-cropped thumbnail
+ *   public/media/full/<slug>.webp       up to 1600px wide display image
+ *   public/media/og/<slug>.jpg          1200x630 social-share (OpenGraph) image
  *   src/generated/gallery.json          manifest imported by the React app
  *
  * Images whose source bytes haven't changed are skipped (content hash in
- * public/gallery/.cache.json), and outputs for deleted images are removed.
+ * public/media/.cache.json), and outputs for deleted images are removed.
  */
 import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
@@ -29,17 +31,20 @@ import sharp from 'sharp';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SRC_DIR = join(ROOT, 'gallery');
-const OUT_DIR = join(ROOT, 'public', 'gallery');
+const OUT_DIR = join(ROOT, 'public', 'media');
 const THUMB_DIR = join(OUT_DIR, 'thumbs');
 const FULL_DIR = join(OUT_DIR, 'full');
+const OG_DIR = join(OUT_DIR, 'og');
 const CACHE_FILE = join(OUT_DIR, '.cache.json');
 const MANIFEST = join(ROOT, 'src', 'generated', 'gallery.json');
 
 const IMAGE_EXT = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif', '.gif', '.svg']);
 const THUMB = { width: 600, height: 450 };
 const FULL_MAX = 1600;
+const OG = { width: 1200, height: 630 };
+const EXCERPT_MAX = 160;
 // Bump to force every image to regenerate (e.g. after changing sizes above).
-const PIPELINE_VERSION = 1;
+const PIPELINE_VERSION = 2;
 
 const slugify = (s) =>
   s
@@ -62,6 +67,19 @@ const PLACEHOLDER_TEXT = [
   'Description forthcoming. In the meantime, please admire the silhouette.',
 ];
 
+/** Plain-text excerpt of some HTML, for meta descriptions. */
+function excerpt(html) {
+  const text = html
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (text.length <= EXCERPT_MAX) return text;
+  return text.slice(0, text.lastIndexOf(' ', EXCERPT_MAX - 1)).replace(/[,;:.]$/, '') + '…';
+}
+
 async function readJson(file, fallback) {
   try {
     return JSON.parse(await readFile(file, 'utf8'));
@@ -73,6 +91,7 @@ async function readJson(file, fallback) {
 async function main() {
   await mkdir(THUMB_DIR, { recursive: true });
   await mkdir(FULL_DIR, { recursive: true });
+  await mkdir(OG_DIR, { recursive: true });
   await mkdir(dirname(MANIFEST), { recursive: true });
 
   const files = existsSync(SRC_DIR) ? await readdir(SRC_DIR) : [];
@@ -103,9 +122,11 @@ async function main() {
 
     const thumbPath = join(THUMB_DIR, `${slug}.webp`);
     const fullPath = join(FULL_DIR, `${slug}.webp`);
+    const ogPath = join(OG_DIR, `${slug}.jpg`);
     let meta = cache[slug];
 
-    if (!meta || meta.hash !== hash || !existsSync(thumbPath) || !existsSync(fullPath)) {
+    const outputsExist = [thumbPath, fullPath, ogPath].every((p) => existsSync(p));
+    if (!meta || meta.hash !== hash || !outputsExist) {
       await sharp(bytes)
         .resize({ ...THUMB, fit: 'cover', position: 'attention' })
         .webp({ quality: 80 })
@@ -114,6 +135,12 @@ async function main() {
         .resize({ width: FULL_MAX, withoutEnlargement: true })
         .webp({ quality: 85 })
         .toFile(fullPath);
+      // JPEG, not WebP: some link-preview scrapers still don't accept WebP.
+      await sharp(bytes)
+        .resize({ ...OG, fit: 'cover', position: 'attention' })
+        .flatten({ background: '#fbf5ea' })
+        .jpeg({ quality: 82, mozjpeg: true })
+        .toFile(ogPath);
       meta = { hash, width: info.width, height: info.height };
       built++;
     }
@@ -129,17 +156,22 @@ async function main() {
       body = parsed.content.trim();
     }
 
+    const descriptionHtml = body
+      ? await marked.parse(body)
+      : `<p>${PLACEHOLDER_TEXT[i % PLACEHOLDER_TEXT.length]}</p>`;
+
     entries.push({
       slug,
       title: String(data.title ?? titleFromSlug(slug)),
       summary: data.summary ? String(data.summary) : null,
-      descriptionHtml: body
-        ? await marked.parse(body)
-        : `<p>${PLACEHOLDER_TEXT[i % PLACEHOLDER_TEXT.length]}</p>`,
+      alt: data.alt ? String(data.alt) : null,
+      excerpt: excerpt(descriptionHtml),
+      descriptionHtml,
       hasSidecar: Boolean(body || Object.keys(data).length),
       order: typeof data.order === 'number' ? data.order : null,
-      thumb: `gallery/thumbs/${slug}.webp`,
-      full: `gallery/full/${slug}.webp`,
+      thumb: `media/thumbs/${slug}.webp`,
+      full: `media/full/${slug}.webp`,
+      og: `media/og/${slug}.jpg`,
       width: meta.width,
       height: meta.height,
     });
@@ -151,6 +183,7 @@ async function main() {
     if (nextCache[slug]) continue;
     await rm(join(THUMB_DIR, `${slug}.webp`), { force: true });
     await rm(join(FULL_DIR, `${slug}.webp`), { force: true });
+    await rm(join(OG_DIR, `${slug}.jpg`), { force: true });
     removed++;
   }
 

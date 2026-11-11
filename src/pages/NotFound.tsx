@@ -1,9 +1,7 @@
 import { Link } from 'react-router-dom';
 import PageHeader from '../components/PageHeader';
-import { usePageTitle } from '../usePageTitle';
 
 export default function NotFound() {
-  usePageTitle('Page not found');
   return (
     <>
       <PageHeader title="Hat not found" crumbs={[{ label: '404' }]} />
